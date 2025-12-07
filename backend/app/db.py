@@ -138,9 +138,16 @@ class DatabaseManager:
                     groqApiKey TEXT,
                     openaiApiKey TEXT,
                     anthropicApiKey TEXT,
-                    ollamaApiKey TEXT
+                    ollamaApiKey TEXT,
+                    siliconflowApiKey TEXT
                 )
             """)
+
+            try:
+                cursor.execute("ALTER TABLE settings ADD COLUMN siliconflowApiKey TEXT")
+                logger.info("Added siliconflowApiKey column to settings table")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
 
             # Create transcript_settings table
             cursor.execute("""
@@ -152,9 +159,16 @@ class DatabaseManager:
                     deepgramApiKey TEXT,
                     elevenLabsApiKey TEXT,
                     groqApiKey TEXT,
-                    openaiApiKey TEXT
+                    openaiApiKey TEXT,
+                    siliconflowApiKey TEXT
                 )
             """)
+
+            try:
+                cursor.execute("ALTER TABLE transcript_settings ADD COLUMN siliconflowApiKey TEXT")
+                logger.info("Added siliconflowApiKey column to transcript_settings table")
+            except sqlite3.OperationalError:
+                pass  # Column already exists
 
             conn.commit()
 
@@ -581,7 +595,7 @@ class DatabaseManager:
 
     async def save_api_key(self, api_key: str, provider: str):
         """Save the API key"""
-        provider_list = ["openai", "claude", "groq", "ollama"]
+        provider_list = ["openai", "claude", "groq", "ollama", "siliconflow"]
         if provider not in provider_list:
             raise ValueError(f"Invalid provider: {provider}")
         if provider == "openai":
@@ -592,6 +606,8 @@ class DatabaseManager:
             api_key_name = "groqApiKey"
         elif provider == "ollama":
             api_key_name = "ollamaApiKey"
+        elif provider == "siliconflow":
+            api_key_name = "siliconflowApiKey"
             
         try:
             async with self._get_connection() as conn:
@@ -626,7 +642,7 @@ class DatabaseManager:
 
     async def get_api_key(self, provider: str):
         """Get the API key"""
-        provider_list = ["openai", "claude", "groq", "ollama"]
+        provider_list = ["openai", "claude", "groq", "ollama", "siliconflow"]
         if provider not in provider_list:
             raise ValueError(f"Invalid provider: {provider}")
         if provider == "openai":
@@ -637,6 +653,8 @@ class DatabaseManager:
             api_key_name = "groqApiKey"
         elif provider == "ollama":
             api_key_name = "ollamaApiKey"
+        elif provider == "siliconflow":
+            api_key_name = "siliconflowApiKey"
         async with self._get_connection() as conn:
             cursor = await conn.execute(f"SELECT {api_key_name} FROM settings WHERE id = '1'")
             row = await cursor.fetchone()
@@ -700,7 +718,7 @@ class DatabaseManager:
 
     async def save_transcript_api_key(self, api_key: str, provider: str):
         """Save the transcript API key"""
-        provider_list = ["localWhisper","deepgram","elevenLabs","groq","openai"]
+        provider_list = ["localWhisper","deepgram","elevenLabs","groq","openai","siliconflow"]
         if provider not in provider_list:
             raise ValueError(f"Invalid provider: {provider}")
         if provider == "localWhisper":
@@ -713,6 +731,8 @@ class DatabaseManager:
             api_key_name = "groqApiKey"
         elif provider == "openai":
             api_key_name = "openaiApiKey"
+        elif provider == "siliconflow":
+            api_key_name = "siliconflowApiKey"
             
         try:
             async with self._get_connection() as conn:
@@ -748,7 +768,7 @@ class DatabaseManager:
 
     async def get_transcript_api_key(self, provider: str):
         """Get the transcript API key"""
-        provider_list = ["localWhisper","deepgram","elevenLabs","groq","openai"]
+        provider_list = ["localWhisper","deepgram","elevenLabs","groq","openai","siliconflow"]
         if provider not in provider_list:
             raise ValueError(f"Invalid provider: {provider}")
         if provider == "localWhisper":
@@ -761,6 +781,8 @@ class DatabaseManager:
             api_key_name = "groqApiKey"
         elif provider == "openai":
             api_key_name = "openaiApiKey"
+        elif provider == "siliconflow":
+            api_key_name = "siliconflowApiKey"
         async with self._get_connection() as conn:
             cursor = await conn.execute(f"SELECT {api_key_name} FROM transcript_settings WHERE id = '1'")
             row = await cursor.fetchone()
