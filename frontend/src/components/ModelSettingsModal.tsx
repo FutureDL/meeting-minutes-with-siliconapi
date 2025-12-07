@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export interface ModelConfig {
-  provider: 'ollama' | 'groq' | 'claude' | 'openai' | 'openrouter';
+  provider: 'ollama' | 'groq' | 'claude' | 'openai' | 'openrouter' | 'siliconflow';
   model: string;
   whisperModel: string;
   apiKey?: string | null;
@@ -129,6 +129,14 @@ export function ModelSettingsModal({
     }
   }, [modelConfig.apiKey]);
 
+  const siliconFlowModels = [
+    'Qwen/Qwen2.5-7B-Instruct',
+    'Qwen/Qwen2.5-14B-Instruct',
+    'deepseek-ai/DeepSeek-V3',
+    '01-ai/Yi-1.5-9B-Chat',
+    'meta-llama/Llama-3.3-70B-Instruct',
+  ];
+
   const modelOptions = {
     ollama: models.map((model) => model.name),
     claude: ['claude-3-5-sonnet-latest', 'claude-3-5-sonnet-20241022', 'claude-3-5-sonnet-20240620'],
@@ -159,13 +167,24 @@ export function ModelSettingsModal({
       'gpt-3.5-turbo-1106'
     ],
     openrouter: openRouterModels.map((m) => m.id),
+    siliconflow: siliconFlowModels,
   };
 
   const requiresApiKey =
     modelConfig.provider === 'claude' ||
     modelConfig.provider === 'groq' ||
     modelConfig.provider === 'openai' ||
-    modelConfig.provider === 'openrouter';
+    modelConfig.provider === 'openrouter' ||
+    modelConfig.provider === 'siliconflow';
+
+  const providerOptions: { value: ModelConfig['provider']; label: string }[] = [
+    { value: 'claude', label: 'Anthropic (Claude)' },
+    { value: 'groq', label: 'Groq (Llama 3.3 70B)' },
+    { value: 'ollama', label: 'Ollama (Local)' },
+    { value: 'openai', label: 'OpenAI (GPT)' },
+    { value: 'openrouter', label: 'OpenRouter (Multi-provider)' },
+    { value: 'siliconflow', label: 'SiliconFlow' },
+  ];
 
   // Check if Ollama endpoint has changed but models haven't been fetched yet
   const ollamaEndpointChanged = modelConfig.provider === 'ollama' &&
@@ -519,11 +538,11 @@ export function ModelSettingsModal({
                 <SelectValue placeholder="Select provider" />
               </SelectTrigger>
               <SelectContent className="max-h-64 overflow-y-auto">
-                <SelectItem value="claude">Claude</SelectItem>
-                <SelectItem value="groq">Groq</SelectItem>
-                <SelectItem value="ollama">Ollama</SelectItem>
-                <SelectItem value="openai">OpenAI</SelectItem>
-                <SelectItem value="openrouter">OpenRouter</SelectItem>
+                {providerOptions.map((provider) => (
+                  <SelectItem key={provider.value} value={provider.value}>
+                    {provider.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
