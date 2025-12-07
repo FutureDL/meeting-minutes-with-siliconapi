@@ -77,7 +77,8 @@ class SchemaValidator:
                 ('groqApiKey', 'TEXT', ''),
                 ('openaiApiKey', 'TEXT', ''),
                 ('anthropicApiKey', 'TEXT', ''),
-                ('ollamaApiKey', 'TEXT', '')
+                ('ollamaApiKey', 'TEXT', ''),
+                ('siliconflowApiKey', 'TEXT', '')
             ],
             'transcript_settings': [
                 ('id', 'TEXT', 'PRIMARY KEY'),
@@ -87,7 +88,8 @@ class SchemaValidator:
                 ('deepgramApiKey', 'TEXT', ''),
                 ('elevenLabsApiKey', 'TEXT', ''),
                 ('groqApiKey', 'TEXT', ''),
-                ('openaiApiKey', 'TEXT', '')
+                ('openaiApiKey', 'TEXT', ''),
+                ('siliconflowApiKey', 'TEXT', '')
             ]
         }
 
